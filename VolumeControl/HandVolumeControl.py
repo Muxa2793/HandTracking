@@ -1,11 +1,12 @@
 import sys
+import os
 import cv2
 import time
 import numpy as np
 import math
-import osascript
 sys.path.append('..')
 import HandTrackingModule as htm
+
 
 cap = cv2.VideoCapture(0)
 pTime = 0
@@ -20,7 +21,7 @@ while True:
     img = detector.findHands(img, draw=True)
     lmList = detector.findPosition(img, drawC=False, drawId=False)
     if len(lmList) != 0:
-     
+
         x1, y1 = lmList[4][1], lmList[4][2]
         x2, y2 = lmList[8][1], lmList[8][2]
         cx, cy = (x1+x2)//2, (y1+y2)//2
@@ -33,7 +34,6 @@ while True:
 
         # Интерполяция предела смыкания и размыкания пальцев и максимальной и минимальной громкости
         vol = np.interp(length, [60, 300], [minVol, maxVol])
-        print(vol)
 
         if length <= 60:
             cv2.circle(img, (cx, cy), 10, (0, 255, 0), cv2.FILLED)
@@ -43,7 +43,7 @@ while True:
             cv2.circle(img, (cx, cy), 10, (255, 0, 0), cv2.FILLED)
 
         # Изменение уровня громкости
-        osascript.osascript(f"set volume output volume {str(vol)}")
+        os.system(f"volume {str(vol)}")
 
     # Расчёт FPS
     cTime = time.time()
